@@ -1,0 +1,1 @@
+docker build --tag solutionapi:v.1.0 .

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dnk.solutionapi.dao.ApiDao">
+	<insert id="insertLog" parameterType="com.dnk.solutionapi.dto.ApiUrldto">
+		insert into 
+				Mng.dbo.API_Log
+						(
+						InsertDT
+						,CustomerId
+						,RequestIP
+						,ActionName
+						,RequestURL
+						,Type
+						) 
+				values(
+						getdate()
+						,#{customerId}
+						,#{requestIp}
+						,#{actionName}
+						,#{requestUrl}
+						,#{type}
+						)
+	</insert>
+	
+	<insert id="insertReport"  parameterType="com.dnk.solutionapi.dto.KakaoReportDto">
+		insert into 
+				Mng.dbo.API_Kakao_RequestList
+					(
+					customerId
+					,campaignId        
+					,combineType       
+					,dateType          
+					,reportName        
+					,reportType
+					,viewSDate       
+					,viewEDate
+					,reportId      
+					)
+				values
+					(
+					#{customerId}  
+					,#{campaignId}  
+					,#{combineType}
+					,#{dateType} 
+					,#{reportName} 
+					,#{reportType}  
+					,#{viewSDate}  
+					,#{viewEDate}   	
+					,#{reportId}		
+					)
+	</insert>
+	
+	<select id="getApiKey" parameterType="com.dnk.solutionapi.dto.ApiUrldto" resultType="java.lang.String">
+		select	apiKey
+		from 	Mng.dbo.API_Kakao_Key
+		where	customerId = #{customerId}
+		and     ActiveYN = 'Y'
+	</select>
+
+	<select id="getnaverApi" parameterType="com.dnk.solutionapi.dto.NaverDto" resultType="com.dnk.solutionapi.dto.NaverDto">
+		select	apiKey,secretKey 
+		from	Mng.dbo.API_Naver_key 
+		where	customerId=#{customerId}
+	</select>
+	
+	<select id="getnaverCrawling" parameterType="com.dnk.solutionapi.dto.NaverCrawlingDto" resultType="com.dnk.solutionapi.dto.NaverCrawlingDto">
+		EXEC HCapital.dbo.SP_S_KeywordList_Crawling @intervalMin=#{intervalmin}, @Multi_SEQ=#{multi_seq}, @PowerContentYN=#{powercontentyn}
+	</select>	
+	
+	<select id="getGoogleSecret" parameterType="java.lang.Integer" resultType="com.dnk.solutionapi.dto.GoogleDto">
+		select 	google_refreshToken
+				,google_clientId
+				,google_clientSecret
+				,google_clientCustomerId
+				,google_developerToken
+		from 	Mng.dbo.API_Google_Key
+		where	customerId = #{customerId}
+	</select>
+	
+	<select id="getKakaoApiKey" parameterType="String" resultType="String">
+		select	customerId
+		from	Mng.dbo.API_Kakao_Key 
+		where	ClientId=#{clientId}
+		and     ActiveYN = 'Y'
+	</select>	
+	
+	<select id="getAccess_token" parameterType="java.lang.Integer" resultType="String">
+		select	access_token
+		from	Mng.dbo.API_Kakao_Key
+		where	customerId = #{customerId}
+		and     ActiveYN = 'Y'
+	</select>
+	
+	<update id="insertKakaoT_A" parameterType="com.dnk.solutionapi.dto.ActionDto">
+		update  Mng.dbo.API_Kakao_Key set
+		refresh_token		=	#{refresh_token}
+		,access_token		=	#{access_token}
+		,refresh_tokenDT	=	getdate()
+		,access_tokenDT		=	getdate()
+		where ClientID = (select top 1 ClientID from  Mng.dbo.API_Kakao_Key where customerid = #{customerId} and ActiveYN = 'Y')
+	</update>
+	
+	<update id="updateAccess_Token" parameterType="com.dnk.solutionapi.dto.ActionDto">
+		update  Mng.dbo.API_Kakao_Key set
+		access_token		=	#{access_token}
+		,access_tokenDT		=	getdate()
+		where ClientID = (select top 1 ClientID from  Mng.dbo.API_Kakao_Key where customerid = #{customerId} and ActiveYN = 'Y')
+	</update>
+	
+	<select id="getRefresh_token" parameterType="java.lang.Integer" resultType="String">
+		select	refresh_token
+		from	Mng.dbo.API_Kakao_Key
+		where	customerId = #{customerId}
+		and     ActiveYN = 'Y'
+	</select>
+	
+	<select id="getTimeofToken" parameterType="com.dnk.solutionapi.dto.ActionDto" resultType="com.dnk.solutionapi.dto.ActionDto" >
+		select	CONVERT(CHAR(19), access_tokenDT, 120) as access_tokenDT
+				,CONVERT(CHAR(19), refresh_tokenDT, 120) as refresh_tokenDT
+				,access_token
+		from	Mng.dbo.API_Kakao_Key
+		where	customerId			=	#{customerId}
+		and     ActiveYN = 'Y'
+	</select>
+	
+	
+</mapper>

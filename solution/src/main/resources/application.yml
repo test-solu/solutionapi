@@ -1,0 +1,23 @@
+mybatis:
+  type-aliases-package: com.dnk.solutionapi.dto
+  mapperLocations: classpath:mapping/*.xml
+server:
+  port: 8090
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+    static-path-pattern: /resources/**
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://sqldb.solu-tion.co.kr:61433;instanceName=Mng
+    username: solution
+    password: solu0601!@
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+      
+      
